@@ -1,0 +1,5 @@
+kaggle.json
+*.pyc
+/data
+*.csv
+*.zip
