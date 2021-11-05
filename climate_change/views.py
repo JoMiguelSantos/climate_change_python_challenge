@@ -1,28 +1,32 @@
 from django.http import HttpResponse, JsonResponse, Http404
 from .models import City
 from django.views import View
-from django.db.models import Max
+from django.db.models import Max, Value
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+
 import json
 
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CityView(View):
     def get(self, request):
-        city = request.GET.get("city")
         start_date = request.GET.get("start_date")
         end_date = request.GET.get("end_date")
-        filtered_cities = City.objects.filter(
-            date__range=[start_date, end_date], city=city
+        highest_average_temperature = (
+            City.objects.filter(date__range=[start_date, end_date])
+            .annotate(common=Value(1))
+            .values("common")
+            .annotate(highest_average_temperature=Max("average_temperature"))
+            .values("highest_average_temperature")[0]["highest_average_temperature"]
         )
-        highest_average_temperature = filtered_cities.aggregate(
-            Max("average_temperature")
-        )["average_temperature__max"]
         highest_average_temperature_cities = serializers.serialize(
             "json",
-            filtered_cities.filter(average_temperature=highest_average_temperature),
+            City.objects.filter(
+                date__range=[start_date, end_date],
+                average_temperature=highest_average_temperature,
+            ),
         )
         return JsonResponse(
             {"highest_average_temperature_cities": highest_average_temperature_cities},
