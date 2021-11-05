@@ -73,7 +73,7 @@ curl --location --request POST 'http://localhost:8000/api/city' \
 
 _Response_:
 
-If created successfully, you'll get the Status Code 204 or else if the entry already exists you'll get the Status Code 403
+If created successfully, you'll get the Status Code 204 or else if the entry already exists you'll get the Status Code 409
 
 ### Following question 1: assume the returned entry has been found erroneous. The actual average temperature of this entry is 2.5 degrees lower. Update this entry.
 

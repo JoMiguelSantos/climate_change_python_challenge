@@ -53,7 +53,7 @@ class CityView(View):
                 "longitude": longitude,
             },
         )
-        return HttpResponse(status=201) if created else HttpResponse(status=403)
+        return HttpResponse(status=201) if created else HttpResponse(status=409)
 
     def put(self, request):
         parsed_body = json.loads(request.body)
